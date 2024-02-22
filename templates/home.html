@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Upload</title>
+    <style>
+      #loadingSpinner {
+        border-top: 6px solid #333;
+        border-radius: 100%;
+        width: 40px;
+        height: 40px;
+        animation: spin 0.5s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Upload Image</h2>
+    <form id="uploadForm">
+      <input type="file" id="imageInput" required />
+      <br /><br />
+      <!-- <input
+        type="radio"
+        id="sendAsFile"
+        name="uploadType"
+        value="file"
+        checked
+      /> -->
+      <!-- <label for="sendAsFile">Send as File</label><br />
+      <input type="radio" id="sendAsBase64" name="uploadType" value="base64" />
+      <label for="sendAsBase64">Send as Base64</label><br /><br /> -->
+      <button type="submit">Upload</button>
+    </form>
+
+    <h3>Response Image:</h3>
+    <img
+      id="responseImage"
+      src=""
+      style="width: 700px; height: 600px"
+      alt="Response image will be displayed here."
+      hidden
+    />
+
+    <div id="loadingSpinner" hidden></div>
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          //   const uploadType = document.querySelector(
+          //     'input[name="uploadType"]:checked'
+          //   ).value;
+          document.getElementById("loadingSpinner").hidden = false;
+          const imageInput = document.getElementById("imageInput");
+          const responseImage = document.getElementById("responseImage");
+
+          //   if (uploadType === "file") {
+          //     // Prepare FormData for file upload
+          //     const formData = new FormData();
+          //     formData.append("userImage", imageInput.files[0]);
+
+          //     fetch("/swap-face", {
+          //       method: "POST",
+          //       body: formData,
+          //     })
+          //       .then((response) => response.json())
+          //       .then((data) => {
+          //         if (data.image) {
+          //           document.getElementById("loadingSpinner").hidden = true;
+          //           responseImage.src = "data:image/jpeg;base64," + data.image;
+          //           responseImage.hidden = false;
+          //         }
+          //       })
+          //       .catch((error) => console.error("Error:", error));
+          //   } else if (uploadType === "base64") {
+          // Convert file to Base64 and send as JSON
+          const reader = new FileReader();
+          reader.onloadend = function () {
+            const base64Image = reader.result.split(",")[1]; // Remove the Base64 prefix
+            fetch("/swap-face", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ base64Image: base64Image }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.image) {
+                  document.getElementById("loadingSpinner").hidden = true;
+                  responseImage.src = "data:image/jpeg;base64," + data.image;
+                  responseImage.hidden = false;
+                }
+              })
+              .catch((error) => console.error("Error:", error));
+          };
+          reader.readAsDataURL(imageInput.files[0]);
+          //   }
+        });
+    </script>
+  </body>
+</html>
