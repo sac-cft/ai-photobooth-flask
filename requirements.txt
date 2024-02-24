@@ -8,7 +8,8 @@ gradio>=3.33.1
 insightface==0.7.3
 moviepy>=1.0.3
 numpy
-opencv-contrib-python
+ultralytics
+opencv-python-headless==4.8.1.78
 onnx==1.14.0
 onnxruntime==1.15.0
 gfpgan==1.3.8
