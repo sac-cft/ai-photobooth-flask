@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 import os
+import subprocess 
 import matplotlib.pyplot as plt
 import gdown
 import insightface
@@ -16,6 +17,14 @@ app = Flask(__name__)
 face_app = FaceAnalysis(name='buffalo_l')
 face_app.prepare(ctx_id=0, det_size=(640, 640))
 
+# Add setup commands
+setup_commands = [
+    "sudo apt-get update",
+    "sudo apt-get install -y libgl1-mesa-glx"
+]
+
+for command in setup_commands:
+    subprocess.run(command, shell=True)  # Execute the setup commands
 # Download 'inswapper_128.onnx' file using gdown
 model_url = 'https://drive.google.com/uc?id=1HvZ4MAtzlY74Dk4ASGIS9L6Rg5oZdqvu'
 model_output_path = 'inswapper/inswapper_128.onnx'
