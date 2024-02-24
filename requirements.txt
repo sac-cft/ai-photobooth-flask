@@ -3,6 +3,7 @@ Gunicorn
 cv
 matplotlib
 gdown
+streamlit
 gradio>=3.33.1
 insightface==0.7.3
 moviepy>=1.0.3
