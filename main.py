@@ -6,13 +6,13 @@ import gdown
 import insightface
 from insightface.app import FaceAnalysis
 from insightface.data import get_image as ins_get_image
-from faceswap import simple_face_swap, swap_n_show, swap_n_show_same_img, swap_face_single,fine_face_swap
 from werkzeug.utils import secure_filename
 import base64
 from io import BytesIO
 from PIL import Image
 import uuid
 import base64
+import cv2
 app = Flask(__name__)
 face_app = FaceAnalysis(name='buffalo_l')
 face_app.prepare(ctx_id=0, det_size=(640, 640))
@@ -41,6 +41,36 @@ img1_fn = 'images/mrr.jpg'
 UPLOAD_FOLDER = 'images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
+def simple_face_swap(img1_fn, img2_fn, app, swapper):
+    # Load the first image and detect faces
+    img1 = cv2.imread(img1_fn)
+    facesimg1 = app.get(img1)
+    if len(facesimg1) == 0:
+        print("No faces detected in the first image.")
+        return
+    # Assume the first face is the target
+    face1 = facesimg1[0]
+
+    # Load the second image and detect faces
+    img2 = cv2.imread(img2_fn)
+    facesimg2 = app.get(img2)
+    if len(facesimg2) == 0:
+        print("No faces detected in the second image.")
+        return
+    # Assume the first face is the target
+    face2 = facesimg2[0]
+
+    # Perform the face swap
+    img1_swapped = swapper.get(img1, face1, face2, paste_back=True)
+
+     # Generate a unique filename using UUID
+    unique_filename = str(uuid.uuid4()) + ".jpg"
+    output_fn = os.path.join('results', unique_filename)
+
+    cv2.imwrite(output_fn, img1_swapped)
+    print(f'Face swapped completed. Image saved to {output_fn}')
+    return output_fn
 
 @app.route('/')
 def homepage():
